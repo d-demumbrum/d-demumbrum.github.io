@@ -1,0 +1,46 @@
+/* Font */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 800px; 
+}
+
+/* Headings */
+h1 {
+    text-align: center;
+    color: #333;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+}
+
+h2 {
+    color: #8C1D40; 
+    border-bottom: 1px solid #8C1D40;
+    padding-bottom: 3px;
+    margin-top: 25px;
+}
+
+h3 {
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* Spacing */
+section {
+    margin-bottom: 20px;
+}
+
+/* Experience dates */
+.dates {
+    font-style: italic;
+    font-size: 0.9em;
+    margin-top: 0;
+}
+
+/* Bullet points/lists */
+ul {
+    list-style: disc;
+    margin-left: 20px;
+}

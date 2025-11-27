@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daniel DeMumbrum - Media</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS for ASU colors -->
+    <style>
+        :root {
+            --asu-maroon: #8C1D40;
+            --asu-gold: #FFC627;
+        }
+
+        .navbar {
+            background-color: var(--asu-gold) !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--asu-maroon) !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link.active {
+            background-color: var(--asu-maroon) !important;
+            color: white !important;
+            border-radius: 5px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: var(--asu-maroon) !important;
+            color: white !important;
+            border-radius: 5px;
+        }
+
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--asu-maroon);
+            border-bottom: 2px solid var(--asu-maroon);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        .media-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" style="color: var(--asu-maroon); font-weight: bold;">DD</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav">
+                    <a class="nav-link" href="index.html">Resume</a>
+                    <a class="nav-link" href="projects.html">Projects</a>
+                    <a class="nav-link active" aria-current="page" href="media.html">Media</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="container text-center my-4">
+        <h1>Media & Socials</h1>
+        <p class="text-muted">Connect with me on social media</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section id="social-feeds">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="media-card">
+                        <h3>LinkedIn</h3>
+                        <p>Check out my latest professional updates.</p>
+                        <!-- LinkedIn Embed Placeholder -->
+                        <div class="ratio ratio-1x1">
+                            <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7391886573501521921"
+                                height="1065" width="504" frameborder="0" allowfullscreen=""
+                                title="Embedded post"></iframe>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="media-card">
+                        <h3>Latest Update</h3>
+                        <p>Secured activity update.</p>
+                        <!-- New LinkedIn Embed -->
+                        <div class="ratio ratio-1x1">
+                            <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7399922301657321473"
+                                height="1065" width="504" frameborder="0" allowfullscreen=""
+                                title="Embedded post"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

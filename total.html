@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sports Total Predictor</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
 
     <div class="w-full max-w-lg bg-white shadow-xl rounded-xl p-8 space-y-6">
@@ -23,6 +25,14 @@
             </select>
         </div>
 
+        <!-- Period Selection -->
+        <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+            <label for="period" class="block text-sm font-medium text-indigo-700 mb-2">Game Period</label>
+            <select id="period" class="w-full p-2 border border-indigo-300 rounded-lg text-lg">
+                <!-- Populated by JS -->
+            </select>
+        </div>
+
         <!-- Scores -->
         <div class="grid grid-cols-2 gap-4">
             <div>
@@ -35,15 +45,17 @@
             </div>
         </div>
 
-        <!-- Time Elapsed -->
+        <!-- Time Remaining -->
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Total Time Elapsed</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Time Remaining in Period</label>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <input type="number" id="minutes" value="0" min="0" placeholder="Minutes" class="w-full p-3 border rounded-lg text-xl">
+                    <input type="number" id="minutes" value="0" min="0" placeholder="Minutes"
+                        class="w-full p-3 border rounded-lg text-xl">
                 </div>
                 <div>
-                    <input type="number" id="seconds" value="0" min="0" max="59" placeholder="Seconds" class="w-full p-3 border rounded-lg text-xl">
+                    <input type="number" id="seconds" value="0" min="0" max="59" placeholder="Seconds"
+                        class="w-full p-3 border rounded-lg text-xl">
                 </div>
             </div>
         </div>
@@ -57,7 +69,8 @@
         </div>
 
         <!-- Calculate Button -->
-        <button id="calc" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition shadow-md">
+        <button id="calc"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition shadow-md">
             Predict Final Score
         </button>
 
@@ -65,10 +78,13 @@
         <div class="p-5 bg-green-100 border-l-4 border-green-500 rounded-lg">
             <h2 class="text-xl font-semibold text-green-700 mb-3">Predicted Final Score</h2>
             <div class="space-y-2">
-                <p class="text-lg font-medium text-green-800">Team A: <span id="predA" class="text-2xl font-bold">0</span></p>
-                <p class="text-lg font-medium text-green-800">Team B: <span id="predB" class="text-2xl font-bold">0</span></p>
+                <p class="text-lg font-medium text-green-800">Team A: <span id="predA"
+                        class="text-2xl font-bold">0</span></p>
+                <p class="text-lg font-medium text-green-800">Team B: <span id="predB"
+                        class="text-2xl font-bold">0</span></p>
                 <div class="border-t-2 border-green-300 my-3 pt-3">
-                    <p class="text-lg font-medium text-green-800">Total: <span id="predTotal" class="text-2xl font-bold">0</span></p>
+                    <p class="text-lg font-medium text-green-800">Total: <span id="predTotal"
+                            class="text-2xl font-bold">0</span></p>
                 </div>
             </div>
             <p id="info" class="text-sm text-green-600 mt-3"></p>
@@ -78,6 +94,7 @@
     <script>
         const inputs = {
             sport: document.getElementById('sport'),
+            period: document.getElementById('period'),
             scoreA: document.getElementById('scoreA'),
             scoreB: document.getElementById('scoreB'),
             minutes: document.getElementById('minutes'),
@@ -92,17 +109,80 @@
             info: document.getElementById('info')
         };
 
+        function updatePeriods() {
+            const [totalMinutes, periodMinutes, otMinutes] = inputs.sport.value.split(',').map(Number);
+            const isOT = inputs.overtime.checked;
+            const currentSelection = inputs.period.value;
+
+            inputs.period.innerHTML = '';
+
+            if (isOT) {
+                // Add OT periods. Let's add a few reasonable ones.
+                for (let i = 1; i <= 6; i++) {
+                    const option = document.createElement('option');
+                    option.value = `OT${i}`;
+                    option.textContent = `Overtime ${i}`;
+                    inputs.period.appendChild(option);
+                }
+            } else {
+                // Regular periods
+                const numPeriods = totalMinutes / periodMinutes;
+                for (let i = 1; i <= numPeriods; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    // Naming convention: 2 periods = Halves, 4 periods = Quarters
+                    const name = numPeriods === 2 ? `${i === 1 ? '1st' : '2nd'} Half` :
+                        numPeriods === 4 ? `${i === 1 ? '1st' : i === 2 ? '2nd' : i === 3 ? '3rd' : '4th'} Quarter` :
+                            `Period ${i}`;
+                    option.textContent = name;
+                    inputs.period.appendChild(option);
+                }
+            }
+
+            // Try to restore selection if valid, otherwise select first
+            // This might be tricky if switching between OT and Reg, so we might just default to first.
+            // If we were in OT and unchecked it, we go to last reg period? Or first? Let's default to first for now.
+        }
+
         function calculate() {
             // Parse sport config: [totalMinutes, periodMinutes, otMinutes]
-            const [total, period, ot] = inputs.sport.value.split(',').map(Number);
-            
+            const [totalGameMinutes, periodMinutes, otMinutes] = inputs.sport.value.split(',').map(Number);
+
             const scoreA = parseFloat(inputs.scoreA.value) || 0;
             const scoreB = parseFloat(inputs.scoreB.value) || 0;
-            const elapsed = (parseFloat(inputs.minutes.value) || 0) * 60 + (parseFloat(inputs.seconds.value) || 0);
+
+            const remainingMinutes = parseFloat(inputs.minutes.value) || 0;
+            const remainingSeconds = parseFloat(inputs.seconds.value) || 0;
+            const remainingInPeriod = remainingMinutes * 60 + remainingSeconds;
+
             const isOT = inputs.overtime.checked;
+            const periodVal = inputs.period.value;
+
+            let elapsed = 0;
+            let totalGameDuration = totalGameMinutes * 60; // Regulation length in seconds
+
+            if (isOT) {
+                // Regulation finished
+                elapsed += totalGameDuration;
+
+                // Add previous OT periods
+                const otNum = parseInt(periodVal.replace('OT', '')) || 1;
+                elapsed += (otNum - 1) * (otMinutes * 60);
+
+                // Add current OT elapsed
+                elapsed += (otMinutes * 60) - remainingInPeriod;
+
+                // For prediction, we usually predict to end of THIS OT period? 
+                // Or if it's close, maybe we don't project?
+                // The original logic projected to end of current OT period.
+            } else {
+                const pNum = parseInt(periodVal) || 1;
+                elapsed += (pNum - 1) * (periodMinutes * 60);
+                elapsed += (periodMinutes * 60) - remainingInPeriod;
+            }
 
             // If no time has elapsed, just show current scores
-            if (elapsed === 0) {
+            if (elapsed <= 0) {
                 outputs.predA.textContent = Math.round(scoreA);
                 outputs.predB.textContent = Math.round(scoreB);
                 outputs.predTotal.textContent = Math.round(scoreA) + Math.round(scoreB);
@@ -114,41 +194,60 @@
             const rateA = scoreA / elapsed;
             const rateB = scoreB / elapsed;
 
-            // Determine remaining time
-            let remaining;
+            // Determine remaining time to project for
+            let remainingToPlay;
             if (isOT) {
                 // In OT, predict to end of current OT period only
-                const otElapsed = elapsed - (total * 60);
-                remaining = (ot * 60) - (otElapsed % (ot * 60));
+                // remainingInPeriod is exactly what's left in this OT period
+                remainingToPlay = remainingInPeriod;
             } else {
-                // In regulation, predict to end of game
-                remaining = (total * 60) - elapsed;
+                // In regulation, predict to end of regulation
+                remainingToPlay = totalGameDuration - elapsed;
             }
 
+            // Safety check
+            if (remainingToPlay < 0) remainingToPlay = 0;
+
             // Calculate predictions
-            const predA = Math.round(scoreA + (rateA * remaining));
-            const predB = Math.round(scoreB + (rateB * remaining));
+            const predA = Math.round(scoreA + (rateA * remainingToPlay));
+            const predB = Math.round(scoreB + (rateB * remainingToPlay));
 
             // Display results
             outputs.predA.textContent = predA;
             outputs.predB.textContent = predB;
             outputs.predTotal.textContent = predA + predB;
-            
+
             const rate = ((rateA + rateB) * 60).toFixed(2);
             const label = isOT ? 'current OT period' : 'end of regulation';
             outputs.info.textContent = `Combined rate: ${rate} pts/min. Prediction for ${label}.`;
         }
 
-        // Auto-calculate on any input change
+        // Event Listeners
+        inputs.sport.addEventListener('change', () => {
+            updatePeriods();
+            calculate();
+        });
+
+        inputs.overtime.addEventListener('change', () => {
+            updatePeriods();
+            calculate();
+        });
+
+        inputs.period.addEventListener('change', calculate);
+
         Object.values(inputs).forEach(input => {
-            input.addEventListener('input', calculate);
-            input.addEventListener('change', calculate);
+            if (input !== inputs.sport && input !== inputs.overtime && input !== inputs.period) {
+                input.addEventListener('input', calculate);
+                input.addEventListener('change', calculate);
+            }
         });
 
         document.getElementById('calc').addEventListener('click', calculate);
 
-        // Initial calculation
+        // Initial setup
+        updatePeriods();
         calculate();
     </script>
 </body>
+
 </html>
